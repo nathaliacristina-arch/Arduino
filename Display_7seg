@@ -1,0 +1,89 @@
+void main() {
+    unsigned char ucMask[]={0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x6F};    // de 0 a 9/ armazena os dados correspondente a ser exibido no display de 7 segmentos
+    
+    unsigned char tratamento_botao=0;
+    unsigned int contador = -1;
+    unsigned int aux_contador = 0;
+
+
+    ADCON1 = 0X0f;    // CONFIGURA OS CANAIS COMO DIGITAL
+    TRISB.RB2 = 1;   //          RB2 COMO ENTRADA
+    
+    TRISA.RA2 = 0; // COINFIGURA OS PINOS DO DISPLAY COMO SAIDA
+    TRISA.RA3 = 0;
+    TRISA.RA4 = 0;
+    TRISA.RA5 = 0;
+    
+    TRISD = 0 ;     // portd como saida
+    
+    TRISB.RB7 = 0;     //led como saida
+    TRISB.RB6 = 0;     //led como saida
+    
+    TRISB.RC1 = 0;      // port c como saida
+    
+    while (1){
+    if (( PORTB.RB2 == 0) && (tratamento_botao ==0)){    // incrementa somente quando a tecla for pressionada
+    tratamento_botao = 1;
+    contador ++;
+    if(contador > 9999){     //valor maximo pro contador
+    contador = 9999;
+    }
+    }
+
+    if   ((  PORTB.RB2 == 1) && (tratamento_botao == 1)){
+     tratamento_botao = 0;
+     }
+
+     aux_contador = contador; // coloca os dados no contador
+     
+     
+      // Mostra valor da unidade.
+     PORTD= ucMask [aux_contador %10];
+     PORTA.RA5 = 1 ;
+     Delay_ms (2);
+     PORTA.RA5 = 0 ;
+     aux_contador /= 10;
+     
+      // Mostra valor da dezena
+     PORTD = ucMask [aux_contador %10];
+     PORTA.RA4 = 1 ;
+     Delay_ms (2);
+     PORTA.RA4 = 0 ;
+      aux_contador /= 10;
+      
+       // Mostra valor da centena.
+     PORTD = ucMask [aux_contador %10];
+     PORTA.RA3 = 1 ;
+     Delay_ms (2);
+     PORTA.RA3 = 0 ;
+      aux_contador /= 10;
+      
+        // Mostra valor do milhar.
+     PORTD = ucMask [aux_contador %10];
+     PORTA.RA2 = 1 ;
+     Delay_ms (2);
+     PORTD.RA2 = 0 ;
+
+      
+      if (contador %  2 == 0){
+      PORTD.RB6 = 1;
+      }
+      
+     else {
+      PORTD.RB6 = 0;
+      }
+      
+      if (contador % 3 ==0){
+     PORTC.RC1 == 1;
+     }
+     }
+      
+      
+     
+      
+     
+    
+    
+    
+    
+}
