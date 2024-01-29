@@ -1,3 +1,7 @@
+// Programa que faz buzzer apitar a cada 2 segundos apenas se a temperatura for maior que maxima
+
+
+
 /acelerar o dim automatico e trocar o 50
 
 //PINS
