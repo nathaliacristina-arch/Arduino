@@ -1,0 +1,166 @@
+const int vermelho_a = 13;
+ const int amarelo_a = 12;
+ const int verde_a = 11;
+ const int vermelho_b = 4;
+ const int amarelo_b = 3;
+ const int verde_b = 2;
+ const int buttonPin = 7;
+ int x; // contador do botao
+ int buttonState = 0;            
+ int pushbottom = LOW;
+ int parte = 0;
+ int bloqueiabotao=0;
+ int fase = 0;
+ int reading = LOW;
+ int lastDebounceTime = 0;
+ int timer = 0;
+ int debounce = 250;
+
+
+unsigned long  aux;
+unsigned long debounceDelay = 0, tempo = 0, time = 0; //
+
+void setup() {
+ 
+ 
+  pinMode (vermelho_a, OUTPUT);
+  pinMode (vermelho_b,  OUTPUT);
+  pinMode (amarelo_a, OUTPUT);
+  pinMode (amarelo_b, OUTPUT);
+  pinMode (verde_a, OUTPUT);
+  pinMode (verde_b, OUTPUT);
+  pinMode(buttonPin, INPUT);
+  Serial.begin (9600);
+}
+
+void loop() {
+   tempo = millis();
+  time = tempo - debounceDelay ;
+ if (bloqueiabotao == 0){  
+ reading = digitalRead(buttonPin);
+ }
+   if (reading !=  buttonState ) { //diferença entre os estados
+    timer = millis ();
+ 
+   
+ }
+ if (tempo - timer > debounce){
+  if (reading != buttonState) {  // se há diferença entre os estados
+      buttonState = HIGH;
+      buttonState = reading;
+        if (buttonState == HIGH) { // se o estado armazenado for HIGH atualizo meu contador
+        x++;
+      pushbottom = HIGH;
+    Serial.println (x); // imprime a quantidade de vezes que o botão foi apertado
+ 
+   
+      }
+    }
+  }
+
+
+   
+ if (time <10000 && parte == 0){  // 10 segundos com o sinal verde em A e vermelho em B
+ digitalWrite (vermelho_a, LOW);
+ digitalWrite (amarelo_a, LOW);
+ digitalWrite (verde_a, HIGH);
+
+ digitalWrite (vermelho_b, HIGH);
+ digitalWrite (amarelo_b, LOW);
+ digitalWrite (verde_b, LOW);
+ bloqueiabotao = 0;
+ fase=1;
+ }
+
+
+
+ // segundo sinal
+else if (time > 10000 && time <15000 && parte ==0){   // 5 segundos com o sinal amarelo em A e mantendo vermelho em B
+ digitalWrite (vermelho_a, LOW);
+ digitalWrite (amarelo_a, HIGH);
+ digitalWrite (verde_a, LOW);
+
+ digitalWrite (vermelho_b, HIGH);
+ digitalWrite (amarelo_b, LOW);
+ digitalWrite (verde_b, LOW);
+ bloqueiabotao = 0;
+ fase = 1;
+}
+
+ else if ( time > 15000 && pushbottom == HIGH && fase == 1){
+ } // verifica se o botao foi pressionado
+
+// terceiro sinal
+else if (time > 15000 && time < 25000 && parte ==0){ //10 segundos com o sinal vermelho em A e verde em B
+ parte = 1;
+ digitalWrite (vermelho_a, HIGH);
+ digitalWrite (amarelo_a, LOW);
+ digitalWrite (verde_a, LOW);
+
+ digitalWrite (vermelho_b, LOW);
+ digitalWrite (amarelo_b, LOW);
+ digitalWrite (verde_b, HIGH);
+ bloqueiabotao = 0;
+ fase = 2;
+}
+
+//quarto sinal
+else if (time > 25000 && time < 30000 && parte == 0){ //5 segundos com o sinal amarelo em B e vermelho em
+ digitalWrite (vermelho_a, HIGH);
+ digitalWrite (amarelo_a, LOW);
+ digitalWrite (verde_a, LOW);
+
+ digitalWrite (vermelho_b, LOW);
+ digitalWrite (amarelo_b, HIGH);
+ digitalWrite (verde_b,  LOW);
+
+ digitalWrite (amarelo_b, LOW);
+ bloqueiabotao = 0;
+ fase = 2;
+}
+
+else if (time > 30000 && pushbottom == HIGH){
+  parte = 1;// verifica se o botao foi pressionado
+}
+
+else if (parte == 0 && time > 30000){ // reinicia o loop
+debounceDelay = tempo ;
+}
+if (parte == 1){
+if ( time > 30000 &&  time < 40000){ // parte B
+  digitalWrite(amarelo_a, LOW); // amarelo desligado em a
+  digitalWrite(amarelo_b, LOW); // desliga o amarelo em b
+  digitalWrite (verde_a, LOW); // vermelho em a
+  digitalWrite(verde_b, LOW); //Desliga o LED verde em b
+  digitalWrite(vermelho_a, HIGH); // liga o LED verde em b
+  digitalWrite(vermelho_b, HIGH); //Liga o LED amarelo em b
+  bloqueiabotao = 1;
+  pushbottom = LOW;
+   
+ }
+ else if ( time > 40000){
+  parte = 0;
+  bloqueiabotao = 0;
+  debounceDelay = tempo ;
+ }
+ 
+else {
+ if ( time > 15000 && time < 25000){
+   digitalWrite(amarelo_a, LOW); // amarelo desligado em a
+  digitalWrite(amarelo_b, LOW); // desliga o amarelo em b
+  digitalWrite (verde_a, LOW); // vermelho em a
+  digitalWrite(verde_b, LOW); //Desliga o LED verde em b
+  digitalWrite(vermelho_a, HIGH); // liga o LED verde em b
+  digitalWrite(vermelho_b, HIGH); //Liga o LED amarelo em b
+  bloqueiabotao = 1;
+  pushbottom = LOW;
+ }
+ else if (time > 25000){
+  parte = 0;
+  bloqueiabotao = 0;
+  debounceDelay =  debounceDelay + 10000;
+  fase = 2;
+ }
+}
+ }
+ }
