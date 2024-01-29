@@ -1,3 +1,7 @@
+//Programa que recebe o incremento do botão e mostra a quantidade de vezes que o botão foi apertado por meio do display de 7 segmentos 
+
+
+
 void main() {
     unsigned char ucMask[]={0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x6F};    // de 0 a 9/ armazena os dados correspondente a ser exibido no display de 7 segmentos
     
