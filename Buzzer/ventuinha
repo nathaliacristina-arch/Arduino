@@ -1,0 +1,39 @@
+int Control = 0;
+int status=0;
+int laststatus=0;
+
+void setup() {
+Serial.begin(9600);
+Serial1.begin(9600);
+}
+
+void loop(){
+ 
+ if (Control == 0){
+     if (Serial1.available()) { // Verificar se há caracteres disponíveis
+       char c = Serial1.read(); // Armazena caracter lido.
+
+if (status!=laststatus){
+
+if (status== 1){ //LIGAR LED
+ Serial.println("Led Ligado");}
+
+if (status== 2){ //DESLIGAR LED
+ Serial.println("Led Desligado");}
+
+if (status== 3){// LIGAR BUZZER
+ Serial.println("Buzzer Ligado");}
+
+if (status== 4){ // DESLIGAR BUZZER
+ Serial.println("Buzzer Desligado");}
+
+if (status== 5){ // LIGAR VENTO
+ Serial.println("Vento Ligado");}
+
+if (status== 6){// DESLIGAR VENTO
+  Serial.println("Vento Desligado");}
+}
+}
+laststatus= status; // armazena o status
+ }
+}
