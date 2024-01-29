@@ -1,0 +1,138 @@
+/acelerar o dim automatico e trocar o 50
+
+//PINS
+const int LDR = 1;
+const int LM35 = 0;
+const int Buzzer = 2;
+const int ledTemp[] = {13, 12, 11};
+const int ledLum[] = {10, 9, 8, 7};
+
+float initTemp;
+float maxTemp = 125;
+float minTemp = -40;
+
+int initLum;
+int maxLum = 381;
+float minLum = 10;
+
+int ADClido = 0;
+float prevTemp;
+float temperatura = 0;
+
+int luminosidade = 0;
+int prevLumDellay;
+int prevLum;
+const int variation = 0;
+
+int escalaTemp;
+int escalaLum;
+int realEscalaLum;
+int bright;
+
+unsigned long curTime;
+unsigned long lastBuzzTime;
+unsigned long lastTempPrintTime;
+unsigned long lastDimTime;
+
+bool buzzIsOnTemp =  false;
+bool buzzedLum =  false;
+
+int lumState = 0;
+
+void ledDim (int escala, int numberLeds, const int  pins[]) {
+
+        if (numberLeds == 3){
+            Serial.print("Temp LEDs: ");
+            Serial.println(temperatura);
+        }
+        if (numberLeds == 4){
+            Serial.print("Lum LEDs: ");
+            Serial.println(luminosidade);
+        }
+
+        for (int i = 0; i < numberLeds; i++) {
+
+            if (escala >= 255) {
+                bright = 255;
+                escala = escala - 255;
+            }
+            else {
+                bright = escala;
+                if (bright < 0) bright = 0;
+                escala = 0;
+            }
+
+            analogWrite(pins[i], bright);
+
+            Serial.print(i);
+            Serial.print(" ");
+            Serial.println(bright);
+
+        }
+        Serial.print("\n");
+}
+
+void setup()
+{
+    Serial.begin(9600);
+    analogReference(DEFAULT);
+
+    for (int x = 0; x < 3; x++)
+        pinMode(ledTemp[x], OUTPUT);
+
+    for (int x = 0; x < 4; x++)
+        pinMode(ledLum[x], OUTPUT);
+
+    pinMode(Buzzer, OUTPUT);
+   
+    ADClido = analogRead(LM35);
+
+    //initTemp = map(((ADClido - 20) * 3.04), 0, 1023, -40, 125);
+    initTemp = ADClido * 0.4887585532;
+
+    minTemp = initTemp;
+    maxTemp = initTemp + 6;
+
+    //initLum = 260;
+    initLum = analogRead(LM35);
+
+
+    maxLum = initLum - 20;
+}
+
+void loop()
+{
+    curTime = millis();
+
+// Temperatura ETAPA 1
+    ADClido = analogRead(LM35);
+    //temperatura = map(((ADClido - 20) * 3.04), 0, 1023, -40, 125);
+    temperatura = ADClido * 0.4887585532;
+   
+    if(curTime >= lastTempPrintTime + 1000){
+        lastTempPrintTime = curTime;
+        Serial.print("Temp = ");
+        Serial.print(temperatura);
+        Serial.println(" C");
+    }
+
+    if (prevTemp != temperatura) {
+        prevTemp = temperatura;
+
+        escalaTemp = map(temperatura, maxTemp, minTemp, 0, 3 * 256); //3 leds com brilho 256
+        ledDim (escalaTemp, 3, ledTemp);
+    }
+
+    //faz buzzer apitar a cada 2 segundos apenas se a temperatura for maior que maxima
+    if (buzzIsOnTemp == false && temperatura >= maxTemp) {
+        buzzIsOnTemp = true;
+        lastBuzzTime = 0;
+    }else if (buzzIsOnTemp == true && temperatura < maxTemp){
+        buzzIsOnTemp = false;
+    }
+
+    if(buzzIsOnTemp && curTime >= lastBuzzTime + 2000){
+        lastBuzzTime = curTime;
+        tone(Buzzer, 400, 500);
+    }
+
