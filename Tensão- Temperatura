@@ -1,0 +1,91 @@
+//Programa que obtem a tensão e a temperatura, conforme a temperatura vai aumentando os leds vão se apagando gradativamente e quando a temperatura for 6 vezes a temperatura inicial, os leds continuam apagados e o buzzer apita
+
+
+const int pinLed1 = 5;
+const int pinLed2 = 6;
+const int pinLed3 = 7;
+int tempPadrao = 24;
+const int pinbuz = 2;
+float temp_sensor =0;
+const int pinpot=A1;
+const int sensorLM35=1;
+int leitura_sensor=0;
+unsigned long tempo_mudanca = millis();
+unsigned long tempo_print = millis();
+int estado = HIGH;
+
+void setup(){
+  Serial.begin(9600);
+  pinMode(pinLed1, OUTPUT);
+  pinMode(pinLed2, OUTPUT);
+  pinMode(pinLed3, OUTPUT);
+  pinMode(pinbuz, OUTPUT);
+ 
+ 
+}
+
+void loop(){
+ 
+ 
+  //obtendo a tensao de saída convertida pelo arduino (entre 0 e 1023)
+  int leitura_sensor = analogRead(sensorLM35);
+   float temp_sensor = leitura_sensor  * 0.4887585532; //convertendo agora para temperatura
+ 
+  int leitura_pot = analogRead(pinpot);
+  int segundos = map(leitura_pot, 0 ,1023, 2000, 10000);
+ 
+
+    digitalWrite(pinLed1, HIGH); //todos os leds se iniciam ligados
+    digitalWrite(pinLed2, HIGH); //todos os leds se iniciam ligados
+    digitalWrite(pinLed3, HIGH); //todos os leds se iniciam ligados
+   
+   
+    noTone(pinbuz);
+   
+  if(temp_sensor >= 20.00){ //se a temperatura aumenta os leds vão se apagando
+    digitalWrite(pinLed1, LOW);
+    digitalWrite(pinLed2, HIGH);
+    digitalWrite(pinLed3, HIGH);
+
+    noTone(pinbuz);
+  } else if(temp_sensor >= 22.00){ //se a temperatura aumenta os leds vão se apagando
+    digitalWrite(pinLed1, LOW);
+    digitalWrite(pinLed2, LOW);
+    digitalWrite(pinLed3, HIGH);
+ 
+    noTone(pinbuz);
+  } else if(temp_sensor >= 24.00){ //todos os leds apagados
+    digitalWrite(pinLed1, LOW);
+    digitalWrite(pinLed2, LOW);
+    digitalWrite(pinLed3, LOW);
+   
+    noTone(pinbuz);
+  } else if(temp_sensor >= 26.00){ //todos os leds apagados
+    digitalWrite(pinLed1, LOW);
+    digitalWrite(pinLed2, LOW);
+    digitalWrite(pinLed3, LOW);
+
+    noTone(pinbuz);
+ 
+  }
+   
+    if(temp_sensor>=6*(tempPadrao)){ //quando a temperatura for 6 vezes a temperatura inicial, os leds continuam apagados e o buzzer apita
+      digitalWrite(pinLed1, LOW);
+      digitalWrite(pinLed2, LOW);
+      digitalWrite(pinLed3, LOW);
+     
+      digitalWrite(pinbuz, estado);
+      (estado == HIGH) ? tone(pinbuz, 440) : noTone(pinbuz);
+     
+      tempo_mudanca = millis();
+      estado = !estado;
+    }
+ 
+ 
+  if((millis() - tempo_print) > 1000){ //deve printar a temperatura a cada 1 segundo
+   Serial.print ("temperatura =");
+    Serial.print(temp_sensor);
+    Serial.print("*C");
+    tempo_print = millis();
+  }
+}
