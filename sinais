@@ -1,0 +1,116 @@
+int vermelho_a = 13;
+ int amarelo_a = 12;
+ int verde_a = 11;
+ int vermelho_b = 4;
+ int amarelo_b = 3;
+ int verde_b = 2;
+ int buttonPin = 7;
+ int x;
+
+ unsigned long changeTime;
+ 
+void setup() {
+  changeTime = millis();
+ 
+  pinMode (vermelho_a, OUTPUT);
+  pinMode (vermelho_b,  OUTPUT);
+  pinMode (amarelo_a, OUTPUT);
+  pinMode (amarelo_b, OUTPUT);
+  pinMode (verde_a, OUTPUT);
+  pinMode (verde_b, OUTPUT);
+  pinMode(buttonPin, INPUT_PULLUP);
+  Serial.begin (9600);
+}
+
+void loop() {
+ 
+     cruzamento();
+ 
+ int state = (digitalRead(buttonPin)==0);
+ if(state == HIGH && (millis() - changeTime) > 2000); { // se o botão for pressionado chama a função
+    changeLights();
+   
+ }
+
+}  
+ 
+ void changeLights(){
+     delay(2000); //Intervalo de 2 segundos
+
+    x++;
+    Serial.println (x);
+    delay (400);
+   
+
+  digitalWrite(verde_b, HIGH); // liga o LED verde em b
+  digitalWrite (vermelho_a, HIGH); // vermelho em a
+  delay (3000);
+ 
+  digitalWrite (vermelho_a, HIGH); // vermelho em a
+  digitalWrite(verde_a, LOW);
+  digitalWrite(amarelo_a, LOW);
+ 
+ 
+  digitalWrite(verde_b, LOW); //Desliga o LED verde em b
+  digitalWrite(amarelo_b, HIGH); //Liga o LED amarelo em b
+  delay(3000); //Intervalo de 3 segundos
+
+  digitalWrite (vermelho_a, HIGH); // mantem vermelho em a
+  digitalWrite(amarelo_b, LOW); //Desliga o LED amarelo de b
+  digitalWrite (verde_b, LOW);
+  digitalWrite(vermelho_b, HIGH); //Liga o LED vermelho de b
+  delay (10000); // os dois sinais mantendo-se vermelho por 10 segundos
+  digitalWrite (vermelho_b, LOW);
+
+// registra o tempo desde a última alteração no semáforo
+changeTime = millis();
+// depois retorna para o loop principal do programa
+ }
+
+void cruzamento(){    
+ // primeiro sinal
+ digitalWrite (vermelho_a, LOW);
+ digitalWrite (amarelo_a, LOW);
+ digitalWrite (verde_a, HIGH);
+
+ digitalWrite (vermelho_b, HIGH);
+ digitalWrite (amarelo_b, LOW);
+ digitalWrite (verde_b, LOW);
+
+ delay ( 10000 ); // 10 segundos com o sinal verde em A e vermelho em B
+
+
+
+ // segundo sinal
+ digitalWrite (vermelho_a, LOW);
+ digitalWrite (amarelo_a, HIGH);
+ digitalWrite (verde_a, LOW);
+
+ digitalWrite (vermelho_b, HIGH);
+ digitalWrite (amarelo_b, LOW);
+ digitalWrite (verde_b, LOW);
+
+ delay ( 5000 ); // 5 segundos com o sinal amarelo em A e mantendo vermelho em B
+
+// terceiro sinal
+ digitalWrite (vermelho_a, HIGH);
+ digitalWrite (amarelo_a, LOW);
+ digitalWrite (verde_a, LOW);
+
+ digitalWrite (vermelho_b, LOW);
+ digitalWrite (amarelo_b, LOW);
+ digitalWrite (verde_b, HIGH);
+
+ delay ( 10000 ); // 10 segundos com o sinal vermelho em A e verde em B
+
+//quarto sinal
+
+ digitalWrite (vermelho_a, HIGH);
+ digitalWrite (amarelo_a, LOW);
+ digitalWrite (verde_a, LOW);
+
+ digitalWrite (vermelho_b, LOW);
+ digitalWrite (amarelo_b, HIGH);
+ digitalWrite (verde_b,  LOW);
+
+ delay ( 5000 ); // 5 segundos com o sinal amarelo em B e vermelho em A
